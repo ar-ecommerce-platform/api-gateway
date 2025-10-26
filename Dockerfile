@@ -27,8 +27,5 @@ RUN apk add --no-cache curl
 # Copy only the jar from build stage
 COPY --from=build /app/build/libs/*.jar app.jar
 
-# Expose service port
-EXPOSE 8888
-
 # Run the app
 CMD ["java", "-jar", "app.jar"]
