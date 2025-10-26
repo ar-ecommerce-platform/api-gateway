@@ -61,6 +61,11 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+bootJar {
+    archiveFileName = 'api-gateway.jar'
+}
+
+
 sonarqube {
     properties {
         property "sonar.projectKey", "ar-ecommerce-platform_${project.name}"
