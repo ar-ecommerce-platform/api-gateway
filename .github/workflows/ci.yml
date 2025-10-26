@@ -1,0 +1,24 @@
+---
+name: API Gateway CI
+on:
+  workflow_run:
+    workflows: ["Linting"]
+    types: [completed]
+
+jobs:
+  call-ci-template:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    uses: ar-ecommerce-platform/.github/.github/workflows/ci.yml@develop
+    with:
+      run_integration_tests: false
+    secrets:
+      PAT_REPORTS_TOKEN: ${{ secrets.PAT_REPORTS_TOKEN }}
+      OWASP_API_KEY: ${{ secrets.OWASP_API_KEY }}
+      OSSINDEX_TOKEN: ${{ secrets.OSSINDEX_TOKEN }}
+      OSSINDEX_USERNAME: ${{ secrets.OSSINDEX_USERNAME }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    permissions:
+      contents: write
+      packages: write

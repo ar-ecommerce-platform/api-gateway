@@ -1,0 +1,70 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.5.7'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'com.diffplug.spotless' version '7.2.1'
+    id 'checkstyle'
+    id "org.owasp.dependencycheck" version "12.1.3"
+    id 'jacoco'
+    id 'org.sonarqube' version "6.3.1.5724"
+}
+
+jacoco {
+    toolVersion = "0.8.13"
+}
+
+// Apply the shared build-quality script from the .github repo
+apply from: "https://raw.githubusercontent.com/ar-ecommerce-platform/.github/develop/gradle/build-quality.gradle"
+
+group = 'com.ecommerce'
+version = '0.0.1-SNAPSHOT'
+description = 'Central routing gateway for the eCommerce microservices. Handles request forwarding, load balancing, and authentication filtering.'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+ext {
+	set('springCloudVersion', "2025.0.0")
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.cloud:spring-cloud-starter-gateway-server-webmvc'
+	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+	compileOnly 'org.projectlombok:lombok'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "ar-ecommerce-platform_${project.name}"
+        property "sonar.organization", "ar-ecommerce-platform"
+        property "sonar.host.url", "https://sonarcloud.io"
+    }
+}
