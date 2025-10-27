@@ -1,0 +1,59 @@
+# ------------------------------------------------------------------------------
+# Workflow: Dependabot configuration (organization-wide baseline)
+# Purpose:
+#   Keeps all repositories secure and up-to-date by automatically
+#   checking for dependency updates in Gradle, Docker, and GitHub Actions.
+#
+# Notes:
+#   - Each microservice should have an identical copy of this file.
+#   - Updates run daily and create PRs when new versions are available.
+#   - Works well with workflow-templates and centralized CI/CD patterns.
+# ------------------------------------------------------------------------------
+
+version: 2
+updates:
+  # ---------------------------
+  # 1. Gradle Dependencies
+  # ---------------------------
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "06:00"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "build"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "security"
+    rebase-strategy: "auto"
+
+  # ---------------------------
+  # 2. Dockerfile Dependencies
+  # ---------------------------
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "docker"
+    rebase-strategy: "auto"
+
+  # ---------------------------
+  # 3. GitHub Actions
+  # ---------------------------
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    labels:
+      - "ci"
+      - "dependencies"
