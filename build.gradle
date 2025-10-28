@@ -32,6 +32,54 @@ configurations {
 	}
 }
 
+repositories {
+	mavenCentral()
+}
+
+ext {
+	set('springCloudVersion', "2025.0.0")
+}
+
+dependencies {
+    // --- Core Spring Boot ---
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // --- Cloud + Microservices ---
+    implementation 'org.springframework.cloud:spring-cloud-starter-gateway-server-webmvc'
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    implementation 'org.springframework.cloud:spring-cloud-starter-config'
+    implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
+    implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
+
+    // --- Security ---
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+
+    // --- Logging & Observability ---
+    implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+    implementation 'io.micrometer:micrometer-tracing-bridge-otel'
+    implementation 'io.opentelemetry:opentelemetry-exporter-otlp'
+
+    // --- Utilities / Hardening ---
+    implementation 'org.apache.commons:commons-lang3:3.19.0'
+    implementation 'org.apache.commons:commons-configuration2:2.12.0'
+    implementation 'com.google.guava:guava:33.5.0-jre'
+
+    // --- Dev ---
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // --- Test ---
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.mockito:mockito-core:5.14.2'
+    testImplementation 'org.testcontainers:junit-jupiter:1.20.4'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
 configurations.configureEach {
     resolutionStrategy {
         force(
@@ -43,30 +91,11 @@ configurations.configureEach {
         )
     }
 
-    exclude group: 'commons-lang', module: 'commons-lang'                     // replaces 2.x with lang3
-    exclude group: 'commons-configuration', module: 'commons-configuration'   // replaces with configuration2
-    exclude group: 'commons-jxpath', module: 'commons-jxpath'                 // legacy, not used by gateway
-    exclude group: 'org.apache.httpcomponents', module: 'httpclient'          // replace with httpclient5
-    exclude group: 'com.google.guava', module: 'guava'                        // force new guava
-}
-
-repositories {
-	mavenCentral()
-}
-
-ext {
-	set('springCloudVersion', "2025.0.0")
-}
-
-dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.springframework.cloud:spring-cloud-starter-gateway-server-webmvc'
-	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
-	compileOnly 'org.projectlombok:lombok'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    exclude group: 'commons-lang', module: 'commons-lang'
+    exclude group: 'commons-configuration', module: 'commons-configuration'
+    exclude group: 'commons-jxpath', module: 'commons-jxpath'
+    exclude group: 'org.apache.httpcomponents', module: 'httpclient'
+    exclude group: 'com.google.guava', module: 'guava'
 }
 
 dependencyManagement {
