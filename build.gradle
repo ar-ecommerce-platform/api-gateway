@@ -32,15 +32,22 @@ configurations {
 	}
 }
 
-configurations.all {
+configurations.configureEach {
     resolutionStrategy {
         force(
-                'org.apache.commons:commons-lang3:3.18.0',
-                'org.apache.commons:commons-configuration2:2.11.0',
+                'org.apache.commons:commons-lang3:3.19.0',
+                'org.apache.commons:commons-configuration2:2.12.0',
                 'com.thoughtworks.xstream:xstream:1.4.21',
-                'org.apache.httpcomponents.client5:httpclient5:5.5.1'
+                'org.apache.httpcomponents.client5:httpclient5:5.5.1',
+                'com.google.guava:guava:33.5.0-jre'
         )
     }
+
+    exclude group: 'commons-lang', module: 'commons-lang'                     // replaces 2.x with lang3
+    exclude group: 'commons-configuration', module: 'commons-configuration'   // replaces with configuration2
+    exclude group: 'commons-jxpath', module: 'commons-jxpath'                 // legacy, not used by gateway
+    exclude group: 'org.apache.httpcomponents', module: 'httpclient'          // replace with httpclient5
+    exclude group: 'com.google.guava', module: 'guava'                        // force new guava
 }
 
 repositories {
