@@ -32,6 +32,17 @@ configurations {
 	}
 }
 
+configurations.all {
+    resolutionStrategy {
+        force(
+                'org.apache.commons:commons-lang3:3.18.0',
+                'commons-configuration:commons-configuration:2.11.0',
+                'com.thoughtworks.xstream:xstream:1.4.21',
+                'org.apache.httpcomponents.client5:httpclient5:5.5.1'
+        )
+    }
+}
+
 repositories {
 	mavenCentral()
 }
@@ -55,6 +66,10 @@ dependencyManagement {
 	imports {
 		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
 	}
+}
+
+dependencyLocking {
+    lockAllConfigurations()
 }
 
 tasks.named('test') {
