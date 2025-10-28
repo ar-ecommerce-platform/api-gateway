@@ -113,7 +113,7 @@ tasks.named('test') {
 }
 
 bootJar {
-    archiveFileName = 'api-gateway.jar'
+    archiveFileName = 'apigateway.jar'
 }
 
 
