@@ -95,7 +95,7 @@ configurations.configureEach {
     exclude group: 'commons-configuration', module: 'commons-configuration'
     exclude group: 'commons-jxpath', module: 'commons-jxpath'
     exclude group: 'org.apache.httpcomponents', module: 'httpclient'
-    exclude group: 'com.google.guava', module: 'guava'
+//    exclude group: 'com.google.guava', module: 'guava'
 }
 
 dependencyManagement {
