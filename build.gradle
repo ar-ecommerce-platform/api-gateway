@@ -59,12 +59,12 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
 
     // --- Logging & Observability ---
-    implementation 'org.springframework.boot:spring-boot-starter-log4j2'
     implementation 'io.micrometer:micrometer-tracing-bridge-otel'
     implementation 'io.opentelemetry:opentelemetry-exporter-otlp'
 
     // --- Utilities / Hardening ---
     implementation 'org.apache.commons:commons-lang3:3.19.0'
+    implementation 'commons-lang:commons-lang:2.6'
     implementation 'org.apache.commons:commons-configuration2:2.12.0'
     implementation 'com.google.guava:guava:33.5.0-jre'
 
@@ -91,7 +91,7 @@ configurations.configureEach {
         )
     }
 
-    exclude group: 'commons-lang', module: 'commons-lang'
+   // exclude group: 'commons-lang', module: 'commons-lang'
     exclude group: 'commons-configuration', module: 'commons-configuration'
     exclude group: 'commons-jxpath', module: 'commons-jxpath'
     exclude group: 'org.apache.httpcomponents', module: 'httpclient'
