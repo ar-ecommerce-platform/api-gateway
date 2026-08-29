@@ -36,3 +36,14 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# --- secrets: never commit ---
+.env
+*.env
+!*.env.example
+application-local.yml
+application-local.properties
+*.pem
+*.key
+*.p12
+src/main/resources/keys/

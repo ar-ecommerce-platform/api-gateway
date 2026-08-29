@@ -1,24 +1,15 @@
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.7'
-    id 'io.spring.dependency-management' version '1.1.7'
-    id 'com.diffplug.spotless' version '7.2.1'
-    id 'checkstyle'
-    id "org.owasp.dependencycheck" version "12.1.8"
-    id 'jacoco'
-    id 'org.sonarqube' version "7.0.1.6134"
+	id 'io.spring.dependency-management' version '1.1.7'
+	id 'com.diffplug.spotless' version '7.2.1'
+	id 'checkstyle'
+	id 'jacoco'
 }
-
-jacoco {
-    toolVersion = "0.8.14"
-}
-
-// Apply the shared build-quality script from the .github repo
-apply from: "https://raw.githubusercontent.com/ar-ecommerce-platform/.github/develop/gradle/build-quality.gradle"
 
 group = 'com.ecommerce'
 version = '0.0.1-SNAPSHOT'
-description = 'Central routing gateway for the eCommerce microservices. Handles request forwarding, load balancing, and authentication filtering.'
+description = 'API gateway: single public entry point, routing, CORS and JWT enforcement.'
 
 java {
 	toolchain {
@@ -37,65 +28,22 @@ repositories {
 }
 
 ext {
-	set('springCloudVersion', "2025.0.0")
+	set('springCloudVersion', '2025.0.0')
 }
 
 dependencies {
-    // --- Core Spring Boot ---
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-    // --- Cloud + Microservices ---
-    implementation 'org.springframework.cloud:spring-cloud-starter-gateway-server-webmvc'
-    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
-    implementation 'org.springframework.cloud:spring-cloud-starter-config'
-    implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
-    implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
-
-    // --- Security ---
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
-    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
-    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
-
-    // --- Logging & Observability ---
-    implementation 'io.micrometer:micrometer-tracing-bridge-otel'
-    implementation 'io.opentelemetry:opentelemetry-exporter-otlp'
-
-    // --- Utilities / Hardening ---
-    implementation 'org.apache.commons:commons-lang3:3.19.0'
-    implementation 'commons-lang:commons-lang:2.6'
-    implementation 'org.apache.commons:commons-configuration2:2.12.0'
-    implementation 'com.google.guava:guava:33.5.0-jre'
-
-    // --- Dev ---
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-
-    // --- Test ---
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.mockito:mockito-core:5.14.2'
-    testImplementation 'org.testcontainers:junit-jupiter:1.20.4'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-}
-
-configurations.configureEach {
-    resolutionStrategy {
-        force(
-                'org.apache.commons:commons-lang3:3.19.0',
-                'org.apache.commons:commons-configuration2:2.12.0',
-                'com.thoughtworks.xstream:xstream:1.4.21',
-                'org.apache.httpcomponents.client5:httpclient5:5.5.1',
-                'com.google.guava:guava:33.5.0-jre'
-        )
-    }
-
-   // exclude group: 'commons-lang', module: 'commons-lang'
-    exclude group: 'commons-configuration', module: 'commons-configuration'
-    exclude group: 'commons-jxpath', module: 'commons-jxpath'
-    exclude group: 'org.apache.httpcomponents', module: 'httpclient'
-//    exclude group: 'com.google.guava', module: 'guava'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+	implementation 'org.springframework.cloud:spring-cloud-starter-gateway-server-webmvc'
+	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+	implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
+	implementation 'org.springframework.cloud:spring-cloud-starter-config'
+	compileOnly 'org.projectlombok:lombok'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 dependencyManagement {
@@ -104,23 +52,9 @@ dependencyManagement {
 	}
 }
 
-dependencyLocking {
-    lockAllConfigurations()
-}
-
-tasks.named('test') {
-	useJUnitPlatform()
-}
-
 bootJar {
-    archiveFileName = "${project.name}.jar"
+	archiveFileName = 'api-gateway.jar'
 }
 
-
-sonarqube {
-    properties {
-        property "sonar.projectKey", "ar-ecommerce-platform_${project.name}"
-        property "sonar.organization", "ar-ecommerce-platform"
-        property "sonar.host.url", "https://sonarcloud.io"
-    }
-}
+// Shared, vendored, offline code-quality config (Spotless + Checkstyle + JaCoCo).
+apply from: "$rootDir/gradle/quality.gradle"
