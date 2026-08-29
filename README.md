@@ -53,6 +53,11 @@ This service alone (needs discovery-server + the target services running):
 
 Quality config is vendored: `gradle/quality.gradle`, `config/checkstyle/`.
 
+## Testing
+
+- **Smoke** — `ApiGatewayApplicationTests` boots the full gateway context (routes + security + the multi-issuer resolver), Eureka disabled.
+- **End-to-end** — every request in the [e2e-tests](https://github.com/ar-ecommerce-platform/e2e-tests) suite goes through this gateway, so routing, `StripPrefix`, CORS and JWT enforcement are covered there.
+
 ## Config
 
 | Variable | Default | Purpose |
