@@ -1,60 +1,43 @@
----
-# ------------------------------------------------------------------------------
-# Workflow: Dependabot configuration (organization-wide baseline)
-# Purpose:
-#   Keeps all repositories secure and up-to-date by automatically
-#   checking for dependency updates in Gradle, Docker, and GitHub Actions.
-#
-# Notes:
-#   - Each microservice should have an identical copy of this file.
-#   - Updates run daily and create PRs when new versions are available.
-#   - Works well with workflow-templates and centralized CI/CD patterns.
-# ------------------------------------------------------------------------------
-
+# Grouped, weekly dependency updates. One PR per ecosystem per week.
+# Major bumps for the framework (Spring Boot / Spring Cloud) are held back —
+# those are deliberate upgrades, not automatic.
 version: 2
 updates:
-  # ---------------------------
-  # 1. Gradle Dependencies
-  # ---------------------------
   - package-ecosystem: "gradle"
     directory: "/"
     schedule:
-      interval: "daily"
-      time: "06:00"
+      interval: "weekly"
+      day: "monday"
     open-pull-requests-limit: 5
     commit-message:
-      prefix: "build"
-      include: "scope"
-    labels:
-      - "dependencies"
-      - "security"
-    rebase-strategy: "auto"
+      prefix: "build(deps)"
+    groups:
+      gradle:
+        update-types: ["minor", "patch"]
+    ignore:
+      - dependency-name: "org.springframework.boot"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "org.springframework.cloud*"
+        update-types: ["version-update:semver-major"]
 
-  # ---------------------------
-  # 2. Dockerfile Dependencies
-  # ---------------------------
-  - package-ecosystem: "docker"
-    directory: "/"
-    schedule:
-      interval: "daily"
-    commit-message:
-      prefix: "chore"
-      include: "scope"
-    labels:
-      - "dependencies"
-      - "docker"
-    rebase-strategy: "auto"
-
-  # ---------------------------
-  # 3. GitHub Actions
-  # ---------------------------
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "monday"
     commit-message:
-      prefix: "ci"
-      include: "scope"
-    labels:
-      - "ci"
-      - "dependencies"
+      prefix: "ci(deps)"
+    groups:
+      actions:
+        patterns: ["*"]
+
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    commit-message:
+      prefix: "build(deps)"
+    groups:
+      docker:
+        patterns: ["*"]
