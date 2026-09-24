@@ -1,6 +1,7 @@
 package com.ecommerce.apigateway.config;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -11,7 +12,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
-/** What an anonymous caller can and cannot reach through the gateway. */
+/** The public API surface: what anonymous and signed-in callers can reach through the gateway. */
 @SpringBootTest
 @AutoConfigureMockMvc
 class SecurityConfigTest {
@@ -24,15 +25,14 @@ class SecurityConfigTest {
   }
 
   @Test
-  void otherActuatorEndpoints_requireAuth() throws Exception {
+  void otherActuatorEndpoints_areClosed() throws Exception {
     mvc.perform(get("/actuator/gateway/routes")).andExpect(status().isUnauthorized());
     mvc.perform(get("/actuator/env")).andExpect(status().isUnauthorized());
   }
 
   @Test
-  void writes_requireAuth() throws Exception {
+  void orders_requireAuth() throws Exception {
     mvc.perform(post("/api/orders")).andExpect(status().isUnauthorized());
-    mvc.perform(post("/api/products")).andExpect(status().isUnauthorized());
   }
 
   @Test
@@ -41,5 +41,24 @@ class SecurityConfigTest {
     // product-service is running in the test.
     assertThatThrownBy(() -> mvc.perform(get("/api/products")))
         .hasMessageContaining("Unable to find instance for product-service");
+  }
+
+  @Test
+  void internalEndpoints_areDenied_evenWithAToken() throws Exception {
+    mvc.perform(get("/api/payments/1").with(jwt())).andExpect(status().isForbidden());
+    mvc.perform(post("/api/payments").with(jwt())).andExpect(status().isForbidden());
+    mvc.perform(post("/api/inventory/1/reserve").with(jwt())).andExpect(status().isForbidden());
+    mvc.perform(post("/api/notifications").with(jwt())).andExpect(status().isForbidden());
+    mvc.perform(get("/api/users").with(jwt())).andExpect(status().isForbidden());
+    mvc.perform(get("/api/users/1").with(jwt())).andExpect(status().isForbidden());
+    mvc.perform(post("/api/products").with(jwt())).andExpect(status().isForbidden());
+  }
+
+  @Test
+  void signedInRoutes_passSecurity() {
+    assertThatThrownBy(() -> mvc.perform(get("/api/users/me").with(jwt())))
+        .hasMessageContaining("Unable to find instance for user-service");
+    assertThatThrownBy(() -> mvc.perform(get("/api/notifications").with(jwt())))
+        .hasMessageContaining("Unable to find instance for notification-service");
   }
 }
