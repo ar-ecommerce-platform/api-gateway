@@ -63,7 +63,7 @@ Quality config is vendored: `gradle/quality.gradle`, `config/checkstyle/`.
 | Variable | Default | Purpose |
 |---|---|---|
 | `SERVER_PORT` | `8080` | HTTP port |
-| `JWT_SECRET` | dev fallback | HS256 secret shared with `auth-service` for local-token validation |
+| `JWT_SECRET` | **required** (>= 32 bytes) | HS256 secret shared with `auth-service` for local-token validation |
 | `JWT_ISSUER` | `ecommerce-auth` | expected `iss` on local tokens |
 | `ENTRA_ISSUER_URI` | _(blank)_ | set to `https://login.microsoftonline.com/<tenant>/v2.0` to also accept M365 tokens |
 | `CORS_ALLOWED_ORIGINS` | `http://localhost:3000,http://localhost:5173` | browser origins |
