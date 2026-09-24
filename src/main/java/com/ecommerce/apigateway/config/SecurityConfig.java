@@ -20,8 +20,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
  * Enforces authentication at the single public entry point. Open to anyone: {@code /api/auth/**}
  * (login, register), actuator health/info (for load-balancer checks), and read-only browsing of the
  * catalog ({@code GET} on {@code /api/products/**} and {@code /api/inventory/**}) so the storefront
- * is browsable without an account. Everything else - placing orders, payments, notifications, any
- * write - requires a valid bearer token from a trusted issuer.
+ * is browsable without an account. With a valid bearer token: orders, reading your notifications,
+ * and {@code /api/users/me}. Everything else is denied - it is internal to the platform.
+ *
+ * <p>{@link UserIdentityFilter} then tells the services who the caller is.
  */
 @Configuration
 @EnableWebSecurity
@@ -45,8 +47,14 @@ public class SecurityConfig {
                     .permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/products/**", "/api/inventory/**")
                     .permitAll()
+                    .requestMatchers("/api/orders/**")
+                    .authenticated()
+                    .requestMatchers(HttpMethod.GET, "/api/notifications", "/api/users/me")
+                    .authenticated()
+                    // Default deny: payments, stock reservation, notification writes and the
+                    // user directory are service-to-service only, never reachable by clients.
                     .anyRequest()
-                    .authenticated())
+                    .denyAll())
         .oauth2ResourceServer(
             oauth2 -> oauth2.authenticationManagerResolver(authenticationManagerResolver()));
     return http.build();
