@@ -57,7 +57,7 @@ security:
   jwt:
     local:
       issuer: ${JWT_ISSUER:ecommerce-auth}
-      secret: ${JWT_SECRET:dev-only-not-a-real-secret-change-me-0000000000000000}
+      secret: ${JWT_SECRET}
   # When ENTRA_ISSUER_URI is set, "Sign in with Microsoft 365" tokens are also
   # accepted. Leave blank to run the demo with no Azure dependency.
   entra:
@@ -72,7 +72,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,gateway
+        include: health,info
 
 eureka:
   client:
