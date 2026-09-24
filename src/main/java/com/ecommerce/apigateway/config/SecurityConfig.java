@@ -2,6 +2,7 @@ package com.ecommerce.apigateway.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
+import org.springframework.http.HttpMethod;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,8 +17,11 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 /**
- * Enforces authentication at the single public entry point. {@code /api/auth/**} (login, register)
- * and actuator are open; every other route requires a valid bearer token from a trusted issuer.
+ * Enforces authentication at the single public entry point. Open to anyone: {@code /api/auth/**}
+ * (login, register), actuator, and read-only browsing of the catalog ({@code GET} on
+ * {@code /api/products/**} and {@code /api/inventory/**}) so the storefront is browsable without an
+ * account. Everything else - placing orders, payments, notifications, any write - requires a valid
+ * bearer token from a trusted issuer.
  */
 @Configuration
 @EnableWebSecurity
@@ -38,6 +42,8 @@ public class SecurityConfig {
         .authorizeHttpRequests(
             auth ->
                 auth.requestMatchers("/api/auth/**", "/actuator/**")
+                    .permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/products/**", "/api/inventory/**")
                     .permitAll()
                     .anyRequest()
                     .authenticated())
