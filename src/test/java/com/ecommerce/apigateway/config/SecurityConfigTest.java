@@ -1,9 +1,11 @@
 package com.ecommerce.apigateway.config;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Test;
@@ -22,6 +24,21 @@ class SecurityConfigTest {
   @Test
   void health_isOpen() throws Exception {
     mvc.perform(get("/actuator/health")).andExpect(status().isOk());
+  }
+
+  @Test
+  void swaggerUi_isOpen_andListsTheServices() throws Exception {
+    mvc.perform(get("/swagger-ui/index.html")).andExpect(status().isOk());
+    mvc.perform(get("/v3/api-docs/swagger-config"))
+        .andExpect(status().isOk())
+        .andExpect(content().string(containsString("/api/orders/api-docs")));
+  }
+
+  @Test
+  void serviceSpecs_areOpen_evenWhereTheApiIsNot() {
+    // Reaches routing (no order-service in the test) instead of being rejected with 401.
+    assertThatThrownBy(() -> mvc.perform(get("/api/orders/api-docs")))
+        .hasMessageContaining("Unable to find instance for order-service");
   }
 
   @Test
