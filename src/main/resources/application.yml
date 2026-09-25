@@ -83,3 +83,16 @@ eureka:
       defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
   instance:
     prefer-ip-address: true
+
+# One Swagger UI for the whole platform at /swagger-ui.html. Each entry is a service's
+# OpenAPI spec, fetched through that service's normal gateway route.
+springdoc:
+  swagger-ui:
+    urls-primary-name: Products
+    urls:
+      - { name: Auth, url: /api/auth/api-docs }
+      - { name: Products, url: /api/products/api-docs }
+      - { name: Inventory, url: /api/inventory/api-docs }
+      - { name: Orders, url: /api/orders/api-docs }
+      - { name: Notifications, url: /api/notifications/api-docs }
+      - { name: Users, url: /api/users/api-docs }

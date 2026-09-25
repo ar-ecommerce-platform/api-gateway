@@ -21,7 +21,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
  * (login, register), actuator health/info (for load-balancer checks), and read-only browsing of the
  * catalog ({@code GET} on {@code /api/products/**} and {@code /api/inventory/**}) so the storefront
  * is browsable without an account. With a valid bearer token: orders, reading your notifications,
- * and {@code /api/users/me}. Everything else is denied - it is internal to the platform.
+ * and {@code /api/users/me}. The API docs ({@code /swagger-ui.html}) are public. Everything else is
+ * denied - it is internal to the platform.
  *
  * <p>{@link UserIdentityFilter} then tells the services who the caller is.
  */
@@ -44,6 +45,15 @@ public class SecurityConfig {
         .authorizeHttpRequests(
             auth ->
                 auth.requestMatchers("/api/auth/**", "/actuator/health/**", "/actuator/info")
+                    .permitAll()
+                    // API docs: the Swagger page and each service's spec. Calls made from the
+                    // page still go through the rules below.
+                    .requestMatchers(
+                        HttpMethod.GET,
+                        "/swagger-ui.html",
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**",
+                        "/api/*/api-docs")
                     .permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/products/**", "/api/inventory/**")
                     .permitAll()
